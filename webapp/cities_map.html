@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script>L_PREFER_CANVAS=false; L_NO_TOUCH=false; L_DISABLE_3D=false;</script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.2.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://rawgit.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+    <style>#map_3de15ccc970147e28c84b4405a51efcb {
+        position: relative;
+        width: 950.0px;
+        height: 550.0px;
+        left: 0.0%;
+        top: 0.0%;
+        }
+    </style>
+</head>
+<body>    
+    
+    <div class="folium-map" id="map_3de15ccc970147e28c84b4405a51efcb" ></div>
+</body>
+<script>    
+    
+    
+        var bounds = null;
+    
+
+    var map_3de15ccc970147e28c84b4405a51efcb = L.map(
+        'map_3de15ccc970147e28c84b4405a51efcb', {
+        center: [30, 121.03584249000001],
+        zoom: 2,
+        maxBounds: bounds,
+        layers: [],
+        worldCopyJump: false,
+        crs: L.CRS.EPSG3857,
+        zoomControl: true,
+        });
+
+    
+    
+    var tile_layer_777442de09e0412cb33009bb7d01668b = L.tileLayer(
+        'https://{s}.tiles.mapbox.com/v3/mapbox.world-bright/{z}/{x}/{y}.png',
+        {
+        "attribution": null,
+        "detectRetina": false,
+        "maxNativeZoom": 18,
+        "maxZoom": 18,
+        "minZoom": 0,
+        "noWrap": false,
+        "subdomains": "abc"
+}).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+    
+        var marker_c7c080a157a94bedbcb2fc71b3eb032f = L.marker(
+            [33.1591667, 129.7227783],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_9641f9e9ede9491fa817b04551d46e88 = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_233cda76498344cea181fd9475a38109 = $('<div id="html_233cda76498344cea181fd9475a38109" style="width: 100.0%; height: 100.0%;">Seto, Japan</div>')[0];
+                popup_9641f9e9ede9491fa817b04551d46e88.setContent(html_233cda76498344cea181fd9475a38109);
+            
+
+            marker_c7c080a157a94bedbcb2fc71b3eb032f.bindPopup(popup_9641f9e9ede9491fa817b04551d46e88)
+            ;
+
+            
+        
+    
+        var marker_4941eaec57a94f18a587ad252029f029 = L.marker(
+            [37.05, 140.8833313],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_e0fcb9f03fef45049e9ee3a4120c382f = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_6c82307ffb564b03a107618a1d540130 = $('<div id="html_6c82307ffb564b03a107618a1d540130" style="width: 100.0%; height: 100.0%;">Isesaki, Japan</div>')[0];
+                popup_e0fcb9f03fef45049e9ee3a4120c382f.setContent(html_6c82307ffb564b03a107618a1d540130);
+            
+
+            marker_4941eaec57a94f18a587ad252029f029.bindPopup(popup_e0fcb9f03fef45049e9ee3a4120c382f)
+            ;
+
+            
+        
+    
+        var marker_b01d18deda7b4f298c2bf17bbc0c6335 = L.marker(
+            [45.434186, 10.9977884],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_65085c40b4724aea905b990e0047ae39 = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_3d11ad39d63444a9b66e2a5c928deca8 = $('<div id="html_3d11ad39d63444a9b66e2a5c928deca8" style="width: 100.0%; height: 100.0%;">Verona, Italy</div>')[0];
+                popup_65085c40b4724aea905b990e0047ae39.setContent(html_3d11ad39d63444a9b66e2a5c928deca8);
+            
+
+            marker_b01d18deda7b4f298c2bf17bbc0c6335.bindPopup(popup_65085c40b4724aea905b990e0047ae39)
+            ;
+
+            
+        
+    
+        var marker_0d5b3f6827fe4631a8496afbb08298bc = L.marker(
+            [35.1666667, 138.6833344],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_99e89345146a4c2198918321d2bea03f = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_2663451d62c249689941a6f5dfc37ca6 = $('<div id="html_2663451d62c249689941a6f5dfc37ca6" style="width: 100.0%; height: 100.0%;">Fujieda, Japan</div>')[0];
+                popup_99e89345146a4c2198918321d2bea03f.setContent(html_2663451d62c249689941a6f5dfc37ca6);
+            
+
+            marker_0d5b3f6827fe4631a8496afbb08298bc.bindPopup(popup_99e89345146a4c2198918321d2bea03f)
+            ;
+
+            
+        
+    
+        var marker_7649b1cf742e496f88b95550d9629ca6 = L.marker(
+            [34.65, 133.9166718],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_8fa6e356adf3491e9f7e1f28303e771d = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_6d3c003040ca4b988856cb6f94109dfb = $('<div id="html_6d3c003040ca4b988856cb6f94109dfb" style="width: 100.0%; height: 100.0%;">Okayama, Japan</div>')[0];
+                popup_8fa6e356adf3491e9f7e1f28303e771d.setContent(html_6d3c003040ca4b988856cb6f94109dfb);
+            
+
+            marker_7649b1cf742e496f88b95550d9629ca6.bindPopup(popup_8fa6e356adf3491e9f7e1f28303e771d)
+            ;
+
+            
+        
+    
+        var marker_7c0abc57ad204e02b2e65130604161c7 = L.marker(
+            [26.335833, 127.801389],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_a429876018004cd2a82c3b82523d2be1 = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_4d56ab309c434e1b9090909d07e4a73c = $('<div id="html_4d56ab309c434e1b9090909d07e4a73c" style="width: 100.0%; height: 100.0%;">Okinawa, Japan</div>')[0];
+                popup_a429876018004cd2a82c3b82523d2be1.setContent(html_4d56ab309c434e1b9090909d07e4a73c);
+            
+
+            marker_7c0abc57ad204e02b2e65130604161c7.bindPopup(popup_a429876018004cd2a82c3b82523d2be1)
+            ;
+
+            
+        
+    
+        var marker_67127b35afbd429db4adb74b9f2a52a1 = L.marker(
+            [33.2372222, 131.6044464],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_ff625d3b2fd54d2799e8b2ed44ca5e0d = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_7725c20139d44c01b74cae3f8b49a7f7 = $('<div id="html_7725c20139d44c01b74cae3f8b49a7f7" style="width: 100.0%; height: 100.0%;">Oita, Japan</div>')[0];
+                popup_ff625d3b2fd54d2799e8b2ed44ca5e0d.setContent(html_7725c20139d44c01b74cae3f8b49a7f7);
+            
+
+            marker_67127b35afbd429db4adb74b9f2a52a1.bindPopup(popup_ff625d3b2fd54d2799e8b2ed44ca5e0d)
+            ;
+
+            
+        
+    
+        var marker_acca43bd59f945dfa3361fe5f4c83245 = L.marker(
+            [-34.9333333, 138.6000061],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_695e4bd7557c475dbc5b57a6ab99a730 = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_101de4983ceb48b5b534924e4d78f517 = $('<div id="html_101de4983ceb48b5b534924e4d78f517" style="width: 100.0%; height: 100.0%;">Adelaide, Australia</div>')[0];
+                popup_695e4bd7557c475dbc5b57a6ab99a730.setContent(html_101de4983ceb48b5b534924e4d78f517);
+            
+
+            marker_acca43bd59f945dfa3361fe5f4c83245.bindPopup(popup_695e4bd7557c475dbc5b57a6ab99a730)
+            ;
+
+            
+        
+    
+        var marker_c5e14bf0e621455da68a627082eda082 = L.marker(
+            [33.8333333, 130.8333282],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_ca6a90f301cb481a95956de98220c7b0 = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_6e592736ca9f4a4cb1b1f11664191e94 = $('<div id="html_6e592736ca9f4a4cb1b1f11664191e94" style="width: 100.0%; height: 100.0%;">Kitakyushu, Japan</div>')[0];
+                popup_ca6a90f301cb481a95956de98220c7b0.setContent(html_6e592736ca9f4a4cb1b1f11664191e94);
+            
+
+            marker_c5e14bf0e621455da68a627082eda082.bindPopup(popup_ca6a90f301cb481a95956de98220c7b0)
+            ;
+
+            
+        
+    
+        var marker_b3a8583e673a443db44fc9c5d755c3a2 = L.marker(
+            [34.873298, 127.315351],
+            {
+                icon: new L.Icon.Default()
+                }
+            ).addTo(map_3de15ccc970147e28c84b4405a51efcb);
+        
+    
+            var popup_b741a06f3c444ede9703badd1e38c3be = L.popup({maxWidth: '300'
+            
+            });
+
+            
+                var html_cbd7af592f2743d1a0e4ff80b16c9745 = $('<div id="html_cbd7af592f2743d1a0e4ff80b16c9745" style="width: 100.0%; height: 100.0%;">Tsu, Japan</div>')[0];
+                popup_b741a06f3c444ede9703badd1e38c3be.setContent(html_cbd7af592f2743d1a0e4ff80b16c9745);
+            
+
+            marker_b3a8583e673a443db44fc9c5d755c3a2.bindPopup(popup_b741a06f3c444ede9703badd1e38c3be)
+            ;
+
+            
+        
+</script>
