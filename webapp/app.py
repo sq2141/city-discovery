@@ -61,7 +61,7 @@ def get_descriptors(pooled_tokens):
     for item in fdist.most_common(5):
         common_words.append(item[0])
         
-    return ', '.join(common_words)
+    return ', '.join(common_words)+'...'
 
 
 
@@ -70,20 +70,19 @@ def generate_table(input_city, max_rows=10):
     input_index = cities_df.index[cities_df['City']==input_city][0] # Get index of input
     input_sims = pd.DataFrame(cosims_df.iloc[input_index]) # Get sims for input city
     sims_sorted = input_sims.sort_values(by=input_index, ascending=False) # Sort sims
-    sims_top10 = sims_sorted.iloc[1:11]
-    top10_index = sims_top10.index.get_level_values(1)
-    top10_cities = cities_df.iloc[top10_index][['City','Country','Lat','Lon','Pooled_tokens']]
+    sims_top = sims_sorted.iloc[1:101]
+    top_index = sims_top.index.get_level_values(1)
+    top_cities = cities_df.iloc[top_index][['City','Country','Lat','Lon','Pooled_tokens']]
     
-    top10_cities['Common keywords'] = top10_cities['Pooled_tokens'].apply(get_descriptors)
+    # Add common keywords, filter out cities with empty data/common keywords
+    top_cities['Common keywords'] = top_cities['Pooled_tokens'].apply(get_descriptors)
+    top_names = top_cities[['City','Country','Common keywords','Lat','Lon']]
+    top_names = top_names[top_names['Common keywords']!='...'].head(10) #First 10 results with common keywords)
+    dataframe = top_names[['City','Country','Common keywords']]    
     
-    top10_names = top10_cities[['City','Country','Common keywords']]
-    
-    
-    dataframe = top10_names    
-    
-    cities_map = folium.Map(location=[30, top10_cities['Lon'].mean()], zoom_start=2, 
+    cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
     tiles='Mapbox Bright', width=950, height=550)
-    top10_cities.apply(lambda row: folium.Marker(location=[row['Lat'], row['Lon']], popup = folium.Popup(row['City']+', '+row['Country'], parse_html=True)).add_to(cities_map), axis=1)
+    top_names.apply(lambda row: folium.Marker(location=[row['Lat'], row['Lon']], popup = folium.Popup(row['City']+', '+row['Country'], parse_html=True)).add_to(cities_map), axis=1)
     cities_map.save('cities_map.html')
     
     out = html.Div(
