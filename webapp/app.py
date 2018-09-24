@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 import psycopg2
 from dash.dependencies import Input, Output, State
+from nltk import FreqDist
+import ast
 
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -48,6 +50,21 @@ cosims_df = cosims_stacked_df.unstack()
 
 ###
 
+def get_descriptors(pooled_tokens):
+    words = []
+    for item in ast.literal_eval(pooled_tokens):
+        words.append(item)
+            
+    fdist = FreqDist(words)
+
+    common_words = []
+    for item in fdist.most_common(5):
+        common_words.append(item[0])
+        
+    return ', '.join(common_words)
+
+
+
 def generate_table(input_city, max_rows=10):
     
     input_index = cities_df.index[cities_df['City']==input_city][0] # Get index of input
@@ -55,8 +72,13 @@ def generate_table(input_city, max_rows=10):
     sims_sorted = input_sims.sort_values(by=input_index, ascending=False) # Sort sims
     sims_top10 = sims_sorted.iloc[1:11]
     top10_index = sims_top10.index.get_level_values(1)
-    top10_cities = cities_df.iloc[top10_index][['City','Country','Lat','Lon']]
-    top10_names = cities_df.iloc[top10_index][['City','Country']]
+    top10_cities = cities_df.iloc[top10_index][['City','Country','Lat','Lon','Pooled_tokens']]
+    
+    top10_cities['Common keywords'] = top10_cities['Pooled_tokens'].apply(get_descriptors)
+    
+    top10_names = top10_cities[['City','Country','Common keywords']]
+    
+    
     dataframe = top10_names    
     
     cities_map = folium.Map(location=[30, top10_cities['Lon'].mean()], zoom_start=2, 
@@ -104,7 +126,7 @@ app.layout = html.Div(children=[
            style = {'textAlign': 'center'}),
     
         
-    dcc.Input(id='input-1-state', type='text', value='Montréal'),
+    dcc.Input(id='input-1-state', type='text', value='Boston'),
     html.Button(id='submit-button', n_clicks=0, children='Submit'),
     html.Div(id='output-state')
  
