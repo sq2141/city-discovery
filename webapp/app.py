@@ -74,11 +74,11 @@ def generate_table(input_city, max_rows=10):
     top_index = sims_top.index.get_level_values(1)
     top_cities = cities_df.iloc[top_index][['City','Country','Lat','Lon','Pooled_tokens']]
     
-    # Add common keywords, filter out cities with empty data/common keywords
-    top_cities['Common keywords'] = top_cities['Pooled_tokens'].apply(get_descriptors)
-    top_names = top_cities[['City','Country','Common keywords','Lat','Lon']]
-    top_names = top_names[top_names['Common keywords']!='...'].head(10) #First 10 results with common keywords)
-    dataframe = top_names[['City','Country','Common keywords']]    
+    # Add frequent words, filter out cities with empty data/Ffrequent words
+    top_cities['Frequent words'] = top_cities['Pooled_tokens'].apply(get_descriptors)
+    top_names = top_cities[['City','Country','Frequent words','Lat','Lon']]
+    top_names = top_names[top_names['Frequent words']!='...'].head(10) #First 10 results with frequent words)
+    dataframe = top_names[['City','Country','Frequent words']]    
     
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
     tiles='Mapbox Bright', width=950, height=550)
@@ -118,12 +118,12 @@ def generate_table(input_city, max_rows=10):
 
 app = dash.Dash()
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+app.title = 'LeapFrog'
 
 app.layout = html.Div(children=[
     
-    html.H1(children='Suggested Cities',
+    html.H2(children='LeapFrog - Suggested Cities',
            style = {'textAlign': 'center'}),
-    
         
     dcc.Input(id='input-1-state', type='text', value='Boston'),
     html.Button(id='submit-button', n_clicks=0, children='Submit'),
