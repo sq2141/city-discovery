@@ -38,6 +38,7 @@ sql_query = """
 SELECT * FROM cities_table;
 """
 cities_df = pd.read_sql_query(sql_query,con, index_col = 'index')
+cities_df.sort_index(inplace=True)
 
 # Get cos sims table from SQL server
 sql_query = """
