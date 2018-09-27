@@ -146,15 +146,15 @@ def generate_table(input_city, max_rows=10):
                 + 
                 [html.Td(
                     [html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photos'].decode('ascii')),
-                                 style = {'height':'100px'}),
+                                 style = {'height':'100px', 'width':'150px'}),
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo1'].decode('ascii')),
-                                 style = {'height':'100px','margin-left':'10px'}),
+                                 style = {'height':'100px', 'width':'150px','margin-left':'10px'}),
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo2'].decode('ascii')),
-                                 style = {'height':'100px','margin-left':'10px'}),
+                                 style = {'height':'100px', 'width':'150px','margin-left':'10px'}),
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo3'].decode('ascii')),
-                                 style = {'height':'100px','margin-left':'10px'}),
+                                 style = {'height':'100px', 'width':'150px','margin-left':'10px'}),
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo4'].decode('ascii')),
-                                 style = {'height':'100px','margin-left':'10px'})
+                                 style = {'height':'100px', 'width':'150px','margin-left':'10px'})
                     ]
                 ) 
             ]) for i in range(min(len(dataframe), max_rows))],
@@ -163,7 +163,7 @@ def generate_table(input_city, max_rows=10):
 
             
             # Table style
-            style = {'width':'90%','margin':'auto','display':'block', 'padding-left':'10%'}
+            style = {'width':'80%','margin':'auto','display':'block', 'padding-left':'7%'}
         ),
         
         # World Map Div
