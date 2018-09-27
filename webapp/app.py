@@ -12,11 +12,12 @@ from dash.dependencies import Input, Output, State
 from nltk import FreqDist
 import ast
 import unicodedata
-
+import base64
 from matplotlib import pyplot as plt
 import seaborn as sns
 import folium
 from folium import plugins
+import glob
 
 ### Read data from SQL
 
@@ -48,19 +49,8 @@ SELECT * FROM cosims_stacked_table;
 cosims_stacked_df = pd.read_sql_query(sql_query,con, index_col = ['0','1'])
 cosims_df = cosims_stacked_df.unstack()
 
-
-
-############################################## TEST
-import base64
-image_filename = 'toronto_skyline.jpg' # replace with your own image
-encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+# Load background image
 bg_image = base64.b64encode(open('chicago_skyline3.jpg', 'rb').read())
-###############################################
-
-
-
-###
-
 
 
 def strip_accents_lowercase(text):
@@ -87,6 +77,14 @@ def get_descriptors(pooled_tokens):
         
     return ', '.join(common_words)+'...'
 
+def load_photos(my_index, img_num):
+    folder_path = '../data/dl-images/'+str(my_index)+'/'
+    img_list = [f for f in glob.glob(folder_path+'*.jpg')] # get all image file names for a given city
+    try:
+        encoded_image = base64.b64encode(open(img_list[img_num], 'rb').read())   # open img
+    except IndexError:
+        encoded_image = base64.b64encode(b'null')
+    return encoded_image    
 
 
 def generate_table(input_city, max_rows=10):
@@ -103,7 +101,7 @@ def generate_table(input_city, max_rows=10):
     input_index = cities_df.index[cities_df['City_unicode']==input_city][0] # Get index of input
     input_sims = pd.DataFrame(cosims_df.iloc[input_index]) # Get sims for input city
     sims_sorted = input_sims.sort_values(by=input_index, ascending=False) # Sort sims
-    sims_top = sims_sorted.iloc[1:101]
+    sims_top = sims_sorted.iloc[1:21]
     top_index = sims_top.index.get_level_values(1)
     top_cities = cities_df.iloc[top_index][['City','Country','Lat','Lon','Pooled_tokens']]
     
@@ -114,36 +112,58 @@ def generate_table(input_city, max_rows=10):
         
     ### TESTING
     # get photos for top hits 
-    top_cities['Photos'] = encoded_image
-    top_names = top_cities[['City','Country','Photos','Lat','Lon']].head(10)
-    dataframe = top_names[['City','Country','Photos']]    
+    top_cities['my_index'] = top_cities.index # get index for top cities only
+    top_cities['Photos'] = top_cities['my_index'].apply(load_photos, img_num=0)
+    top_cities['Photo1'] = top_cities['my_index'].apply(load_photos, img_num=1)
+    top_cities['Photo2'] = top_cities['my_index'].apply(load_photos, img_num=2)
+    top_cities['Photo3'] = top_cities['my_index'].apply(load_photos, img_num=3)
+    top_cities['Photo4'] = top_cities['my_index'].apply(load_photos, img_num=4)
+
+
+    
+    
+    top_names = top_cities[['City','Country','Photos','Photo1','Photo2','Photo3','Photo4','Lat','Lon']].head(10)
+    dataframe = top_names[['City','Country','Photos','Photo1','Photo2','Photo3','Photo4']]    
     ### TESTING
     
     # make map
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
     tiles='Mapbox Bright', width=950, height=550)
-    top_names.apply(lambda row: folium.Marker(location=[row['Lat'], row['Lon']], popup = folium.Popup(row['City']+', '+row['Country'], parse_html=True)).add_to(cities_map), axis=1)
+    top_names.apply(lambda row: folium.Marker(location=[row['Lat'], row['Lon']], 
+                                              popup = folium.Popup(row['City']+','+row['Country'],
+                                              parse_html=True)).add_to(cities_map), axis=1)
     cities_map.save('cities_map.html')
     
     out = html.Div(
         [html.Table(
             
             # Header Row
-            [html.Tr([html.Th(col, style={'border':'none'}) for col in dataframe.columns])] +
+            [html.Tr([html.Th(col, style={'border':'none'}) for col in dataframe.columns[:2]])] +
 
             # Body Rows
             [html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns[:-1]] ### fill name and country cols only
+                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns[:2]] ### fill name and country cols only
                 + 
-                [html.Td([html.Img(src='data:image/jpeg;base64,{}'.format(encoded_image.decode('ascii')),
-                                 style = {'height':'100px'})]) 
+                [html.Td(
+                    [html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photos'].decode('ascii')),
+                                 style = {'height':'100px'}),
+                    html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo1'].decode('ascii')),
+                                 style = {'height':'100px','margin-left':'10px'}),
+                    html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo2'].decode('ascii')),
+                                 style = {'height':'100px','margin-left':'10px'}),
+                    html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo3'].decode('ascii')),
+                                 style = {'height':'100px','margin-left':'10px'}),
+                    html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo4'].decode('ascii')),
+                                 style = {'height':'100px','margin-left':'10px'})
+                    ]
+                ) 
             ]) for i in range(min(len(dataframe), max_rows))],
 
   
 
             
-            # table style
-            style = {'width':'80%','margin':'auto','display':'block', 'padding-left':'10%'}
+            # Table style
+            style = {'width':'90%','margin':'auto','display':'block', 'padding-left':'10%'}
         ),
         
         # World Map Div
