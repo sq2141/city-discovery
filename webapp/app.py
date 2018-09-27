@@ -94,6 +94,10 @@ def generate_table(input_city, max_rows=10):
     # preprocess input text and city names to be comparable
     input_city = input_city.lower() # 
     cities_df['City_unicode'] = cities_df['City'].apply(strip_accents_lowercase)
+    
+    # check if input city exists in database
+    if input_city not in cities_df['City_unicode'].values:
+        return html.Div('Sorry, this city is not in the dataset',style = {'textAlign': 'center', 'margin-bottom':'100px'})   
         
     # get top suggestions
     input_index = cities_df.index[cities_df['City_unicode']==input_city][0] # Get index of input
@@ -103,16 +107,19 @@ def generate_table(input_city, max_rows=10):
     top_index = sims_top.index.get_level_values(1)
     top_cities = cities_df.iloc[top_index][['City','Country','Lat','Lon','Pooled_tokens']]
     
-    # Add frequent words, filter out cities with empty data/Ffrequent words
-    top_cities['Frequent words'] = top_cities['Pooled_tokens'].apply(get_descriptors)
-    top_names = top_cities[['City','Country','Frequent words','Lat','Lon']]
-    top_names = top_names[top_names['Frequent words']!='...'].head(10) #First 10 results with frequent words)
+#     # Add frequent words, filter out cities with empty data/Ffrequent words
+#     top_cities['Frequent words'] = top_cities['Pooled_tokens'].apply(get_descriptors)
+#     top_names = top_cities[['City','Country','Frequent words','Lat','Lon']]
+#     top_names = top_names[top_names['Frequent words']!='...'].head(10) #First 10 results with frequent words)
+        
+    ### TESTING
+    # get photos for top hits 
+    top_cities['Photos'] = encoded_image
+    top_names = top_cities[['City','Country','Photos','Lat','Lon']].head(10)
+    dataframe = top_names[['City','Country','Photos']]    
+    ### TESTING
     
-    ############################## TEST
-    top_names['Frequent words'] = encoded_image
-    
-    dataframe = top_names[['City','Country','Frequent words']]    
-    
+    # make map
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
     tiles='Mapbox Bright', width=950, height=550)
     top_names.apply(lambda row: folium.Marker(location=[row['Lat'], row['Lon']], popup = folium.Popup(row['City']+', '+row['Country'], parse_html=True)).add_to(cities_map), axis=1)
@@ -120,58 +127,30 @@ def generate_table(input_city, max_rows=10):
     
     out = html.Div(
         [html.Table(
-            [html.Tr(            
             
-                # Left column
-                [html.Td(
-                    # Header Row
-                    [html.Tr([html.Th(col) for col in dataframe.columns])] +
+            # Header Row
+            [html.Tr([html.Th(col, style={'border':'none'}) for col in dataframe.columns])] +
 
-                    # Body Row
-                    [html.Tr([
-                        html.Td(dataframe.iloc[i][col]) for col in dataframe.columns[:-1]]######## 
-                        + 
-                        [html.Td([html.Img(src='data:image/jpeg;base64,{}'.format(encoded_image.decode('ascii')),
-                                         style = {'height':'100px'})]
-                                 +
-                                 
-                                 ['      ']
-                                 
-                                 +
-                                 
-                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
-                                         style = {'height':'100px'})]
-                                                                  +
-                                 
-                                 ['      ']
-                                 
-                                 +
-                                 
-                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
-                                         style = {'height':'100px'})]
-                                                                  +
-                                 
-                                 ['      ']
-                                 
-                                 +
-                                 
-                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
-                                         style = {'height':'100px'})]
-                                 
-                                
-                                ) 
-                    ]) for i in range(min(len(dataframe), max_rows))]
-                )] +
-                
-                
-                # Right column
-                [html.Td(
-                    html.Iframe(id='map', srcDoc=open('cities_map.html','r').read(), width='290%', height='500')
-                )]                
-            )]
-             
+            # Body Rows
+            [html.Tr([
+                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns[:-1]] ### fill name and country cols only
+                + 
+                [html.Td([html.Img(src='data:image/jpeg;base64,{}'.format(encoded_image.decode('ascii')),
+                                 style = {'height':'100px'})]) 
+            ]) for i in range(min(len(dataframe), max_rows))],
+
+  
+
+            
+            # table style
+            style = {'width':'80%','margin':'auto','display':'block', 'padding-left':'10%'}
+        ),
         
-        )]
+        # World Map Div
+        html.Div(
+            html.Iframe(id='map', srcDoc=open('cities_map.html','r').read(), width='100%', height='570'),
+            style = {'padding-left':'15%','padding-right':'15%','padding-top':'50px'}
+        )]            
     )
     return out
 
@@ -207,13 +186,18 @@ app.layout = html.Div(children=[
     
     # Input/Output
     html.Div([
-        dcc.Input(id='input-1-state', type='text', placeholder='e.g. Buenos Aires', style = {'margin':'auto', 'display':'block'}),
-        html.Button(id='submit-button', n_clicks=0, children='Submit', style = {'margin':'auto', 'margin-top':'10px', 'display':'block', 'margin-bottom':'50px'}),
+        dcc.Input(id='input-1-state', type='text', placeholder='e.g. Buenos Aires',
+                  style = {'margin':'auto','display':'block'}),
+        html.Button(id='submit-button', n_clicks=0, children='Submit',
+                    style = {'margin':'auto', 'margin-top':'10px','display':'block', 'margin-bottom':'50px'}),
         html.Div(id='output-state', style = {'margin':'auto', 'display':'block'})
     ],
     style = {'width':'100%','margin':'auto', 'display':'block'}
     
-    )
+    ),
+    
+    # Footer
+    html.Div(style = {'height':'200px'})
     
  
 ])
