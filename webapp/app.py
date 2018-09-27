@@ -117,14 +117,19 @@ def generate_table(input_city, max_rows=10):
     top_cities['Photo1'] = top_cities['my_index'].apply(load_photos, img_num=1)
     top_cities['Photo2'] = top_cities['my_index'].apply(load_photos, img_num=2)
     top_cities['Photo3'] = top_cities['my_index'].apply(load_photos, img_num=3)
-    top_cities['Photo4'] = top_cities['my_index'].apply(load_photos, img_num=4)
 
 
     
     
-    top_names = top_cities[['City','Country','Photos','Photo1','Photo2','Photo3','Photo4','Lat','Lon']].head(10)
-    dataframe = top_names[['City','Country','Photos','Photo1','Photo2','Photo3','Photo4']]    
+    top_names = top_cities[['City','Country','Photos','Photo1','Photo2','Photo3','Lat','Lon']].head(10)
+    dataframe = top_names[['City','Country','Photos','Photo1','Photo2','Photo3']]    
     ### TESTING
+    
+    
+    ################################### TO DO #########################################
+    
+    # For duplicate cities, append less popular cities with some kind of suffix
+    
     
     # make map
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
@@ -152,8 +157,6 @@ def generate_table(input_city, max_rows=10):
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo2'].decode('ascii')),
                                  style = {'height':'100px', 'width':'150px','margin-left':'10px'}),
                     html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo3'].decode('ascii')),
-                                 style = {'height':'100px', 'width':'150px','margin-left':'10px'}),
-                    html.Img(src='data:image/jpeg;base64,{}'.format(dataframe.iloc[i]['Photo4'].decode('ascii')),
                                  style = {'height':'100px', 'width':'150px','margin-left':'10px'})
                     ]
                 ) 
@@ -163,7 +166,7 @@ def generate_table(input_city, max_rows=10):
 
             
             # Table style
-            style = {'width':'80%','margin':'auto','display':'block', 'padding-left':'7%'}
+            style = {'width':'80%','margin':'auto','display':'block', 'padding-left':'15%'}
         ),
         
         # World Map Div
