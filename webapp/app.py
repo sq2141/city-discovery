@@ -11,6 +11,7 @@ import psycopg2
 from dash.dependencies import Input, Output, State
 from nltk import FreqDist
 import ast
+import unicodedata
 
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -49,7 +50,29 @@ cosims_df = cosims_stacked_df.unstack()
 
 
 
+############################################## TEST
+import base64
+image_filename = 'toronto_skyline.jpg' # replace with your own image
+encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+bg_image = base64.b64encode(open('chicago_skyline3.jpg', 'rb').read())
+###############################################
+
+
+
 ###
+
+
+
+def strip_accents_lowercase(text):
+    try:
+        text = unicode(text, 'utf-8')
+    except NameError: # unicode is a default on python 3 
+        pass
+    text = unicodedata.normalize('NFD', text)
+    text = text.encode('ascii', 'ignore')
+    text = text.decode("utf-8")
+    return str(text).lower()
+
 
 def get_descriptors(pooled_tokens):
     words = []
@@ -68,7 +91,12 @@ def get_descriptors(pooled_tokens):
 
 def generate_table(input_city, max_rows=10):
     
-    input_index = cities_df.index[cities_df['City']==input_city][0] # Get index of input
+    # preprocess input text and city names to be comparable
+    input_city = input_city.lower() # 
+    cities_df['City_unicode'] = cities_df['City'].apply(strip_accents_lowercase)
+        
+    # get top suggestions
+    input_index = cities_df.index[cities_df['City_unicode']==input_city][0] # Get index of input
     input_sims = pd.DataFrame(cosims_df.iloc[input_index]) # Get sims for input city
     sims_sorted = input_sims.sort_values(by=input_index, ascending=False) # Sort sims
     sims_top = sims_sorted.iloc[1:101]
@@ -79,6 +107,10 @@ def generate_table(input_city, max_rows=10):
     top_cities['Frequent words'] = top_cities['Pooled_tokens'].apply(get_descriptors)
     top_names = top_cities[['City','Country','Frequent words','Lat','Lon']]
     top_names = top_names[top_names['Frequent words']!='...'].head(10) #First 10 results with frequent words)
+    
+    ############################## TEST
+    top_names['Frequent words'] = encoded_image
+    
     dataframe = top_names[['City','Country','Frequent words']]    
     
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
@@ -97,7 +129,37 @@ def generate_table(input_city, max_rows=10):
 
                     # Body Row
                     [html.Tr([
-                        html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+                        html.Td(dataframe.iloc[i][col]) for col in dataframe.columns[:-1]]######## 
+                        + 
+                        [html.Td([html.Img(src='data:image/jpeg;base64,{}'.format(encoded_image.decode('ascii')),
+                                         style = {'height':'100px'})]
+                                 +
+                                 
+                                 ['      ']
+                                 
+                                 +
+                                 
+                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
+                                         style = {'height':'100px'})]
+                                                                  +
+                                 
+                                 ['      ']
+                                 
+                                 +
+                                 
+                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
+                                         style = {'height':'100px'})]
+                                                                  +
+                                 
+                                 ['      ']
+                                 
+                                 +
+                                 
+                                 [html.Img(src='data:image/jpeg;base64,{}'.format(top_names['Frequent words'].iloc[0].decode('ascii')),
+                                         style = {'height':'100px'})]
+                                 
+                                
+                                ) 
                     ]) for i in range(min(len(dataframe), max_rows))]
                 )] +
                 
@@ -117,18 +179,42 @@ def generate_table(input_city, max_rows=10):
 ###
 
 
+
 app = dash.Dash()
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+app.css.config.serve_locally = True
+app.scripts.config.serve_locally = True
+dcc._css_dist[0]['relative_package_path'].append('mycss.css')
+#app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 app.title = 'LeapFrog'
 
 app.layout = html.Div(children=[
     
-    html.H2(children='LeapFrog - Suggested Cities',
-           style = {'textAlign': 'center'}),
-        
-    dcc.Input(id='input-1-state', type='text', value='Boston'),
-    html.Button(id='submit-button', n_clicks=0, children='Submit'),
-    html.Div(id='output-state')
+    # Header
+    html.Div(
+        html.H3(
+            children='LeapFrog',style = {'textAlign': 'center'}),
+        style = {'position':'fixed','z-index':'10','background-color':'white','width':'100%'}
+    ),
+    
+    # Splash background image
+    html.Div(html.Img(src='data:image/jpeg;base64,{}'.format(bg_image.decode('ascii')),
+                      style = {'width':'100%', 'padding':'0','margin':'0','box-sizing':'border-box'})),
+    
+    # Space and Prompt
+    html.H5('Enter a city you like:', style = {'margin':'auto', 'display':'block', 'margin-top':'50px', 
+                                               'margin-bottom':'10px','text-align':'center'},
+           id='prompt-text'),
+    
+    # Input/Output
+    html.Div([
+        dcc.Input(id='input-1-state', type='text', placeholder='e.g. Buenos Aires', style = {'margin':'auto', 'display':'block'}),
+        html.Button(id='submit-button', n_clicks=0, children='Submit', style = {'margin':'auto', 'margin-top':'10px', 'display':'block', 'margin-bottom':'50px'}),
+        html.Div(id='output-state', style = {'margin':'auto', 'display':'block'})
+    ],
+    style = {'width':'100%','margin':'auto', 'display':'block'}
+    
+    )
+    
  
 ])
 
