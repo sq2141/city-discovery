@@ -21,10 +21,16 @@ if not database_exists(engine.url):
     create_database(engine.url)
 print(database_exists(engine.url))
 
+# Read and insert narrow cities dataframe
+cities_narrow = pd.read_csv('cities_narrow.csv', index_col = 0)
+cities_narrow.to_sql('cities_narrow', engine, if_exists='replace')
+
 # Read .csv into pandas dataframe
-cities = pd.read_csv('cities_text_processed_df.csv', index_col = 0 )
-cosims_stacked = pd.read_csv('data/cos_sims_stacked.csv', index_col=[0,1], header = None)
+#cities = pd.read_csv('cities_text_processed_df.csv', index_col = 0 )
+#cosims_stacked = pd.read_csv('data/cos_sims_stacked.csv', index_col=[0,1], header = None)
 
 # Insert my data tables into SQL database
-cities.to_sql('cities_table', engine, if_exists='replace')
-cosims_stacked.to_sql('cosims_stacked_table', engine, if_exists='replace')
+#cities.to_sql('cities_table', engine, if_exists='replace')
+#cosims_stacked.to_sql('cosims_stacked_table', engine, if_exists='replace')
+
+print('Insert finished')

@@ -9,7 +9,6 @@ import pandas as pd
 import numpy as np
 import psycopg2
 from dash.dependencies import Input, Output, State
-from nltk import FreqDist
 import ast
 import unicodedata
 import base64
@@ -35,19 +34,15 @@ con = None
 con = psycopg2.connect(database = db_name, user = username, password = password, 
                        host = host, port = port)
 
-# Get cities table from SQL server
+# Get narrow cities table from SQL server
 sql_query = """
-SELECT * FROM cities_table;
+SELECT * FROM cities_narrow;
 """
-cities_df = pd.read_sql_query(sql_query,con, index_col = 'index')
-cities_df.sort_index(inplace=True)
+cities_narrow = pd.read_sql_query(sql_query,con, index_col = None)
+cities_narrow.drop(['index'],axis=1,inplace=True)
 
-# Get cos sims table from SQL server
-sql_query = """
-SELECT * FROM cosims_stacked_table;
-"""
-cosims_stacked_df = pd.read_sql_query(sql_query,con, index_col = ['0','1'])
-cosims_df = cosims_stacked_df.unstack()
+# Create index table
+idx = cities_narrow.loc[:,'s1':'s10']
 
 # Load background image
 bg_image = base64.b64encode(open('chicago_skyline3.jpg', 'rb').read())
@@ -63,20 +58,6 @@ def strip_accents_lowercase(text):
     text = text.decode("utf-8")
     return str(text).lower()
 
-
-def get_descriptors(pooled_tokens):
-    words = []
-    for item in ast.literal_eval(pooled_tokens):
-        words.append(item)
-            
-    fdist = FreqDist(words)
-
-    common_words = []
-    for item in fdist.most_common(5):
-        common_words.append(item[0])
-        
-    return ', '.join(common_words)+'...'
-
 def load_photos(my_index, img_num):
     folder_path = '../data/dl-images/'+str(my_index)+'/'
     img_list = [f for f in glob.glob(folder_path+'*.jpg')] # get all image file names for a given city
@@ -91,25 +72,16 @@ def generate_table(input_city, max_rows=10):
     
     # preprocess input text and city names to be comparable
     input_city = input_city.lower() # 
-    cities_df['City_unicode'] = cities_df['City'].apply(strip_accents_lowercase)
+    cities_narrow['City_unicode'] = cities_narrow['City'].apply(strip_accents_lowercase)
     
     # check if input city exists in database
-    if input_city not in cities_df['City_unicode'].values:
+    if input_city not in cities_narrow['City_unicode'].values:
         return html.Div('Sorry, this city is not in the dataset',style = {'textAlign': 'center', 'margin-bottom':'100px'})   
         
     # get top suggestions
-    input_index = cities_df.index[cities_df['City_unicode']==input_city][0] # Get index of input
-    input_sims = pd.DataFrame(cosims_df.iloc[input_index]) # Get sims for input city
-    sims_sorted = input_sims.sort_values(by=input_index, ascending=False) # Sort sims
-    sims_top = sims_sorted.iloc[1:21]
-    top_index = sims_top.index.get_level_values(1)
-    top_cities = cities_df.iloc[top_index][['City','Country','Lat','Lon','Pooled_tokens']]
+    input_index = cities_narrow.index[cities_narrow['City_unicode']==input_city][0] # Get index of input
+    top_cities = cities_narrow.iloc[idx.iloc[input_index]] # Get rows of top cities
     
-#     # Add frequent words, filter out cities with empty data/Ffrequent words
-#     top_cities['Frequent words'] = top_cities['Pooled_tokens'].apply(get_descriptors)
-#     top_names = top_cities[['City','Country','Frequent words','Lat','Lon']]
-#     top_names = top_names[top_names['Frequent words']!='...'].head(10) #First 10 results with frequent words)
-        
     ### TESTING
     # get photos for top hits 
     top_cities['my_index'] = top_cities.index # get index for top cities only
@@ -117,10 +89,6 @@ def generate_table(input_city, max_rows=10):
     top_cities['Photo1'] = top_cities['my_index'].apply(load_photos, img_num=1)
     top_cities['Photo2'] = top_cities['my_index'].apply(load_photos, img_num=2)
     top_cities['Photo3'] = top_cities['my_index'].apply(load_photos, img_num=3)
-
-
-    
-    
     top_names = top_cities[['City','Country','Photos','Photo1','Photo2','Photo3','Lat','Lon']].head(10)
     dataframe = top_names[['City','Country','Photos','Photo1','Photo2','Photo3']]    
     ### TESTING
