@@ -9,13 +9,9 @@ import pandas as pd
 import numpy as np
 import psycopg2
 from dash.dependencies import Input, Output, State
-import ast
 import unicodedata
 import base64
-from matplotlib import pyplot as plt
-import seaborn as sns
 import folium
-from folium import plugins
 import glob
 
 ### Read data from SQL
@@ -82,7 +78,6 @@ def generate_table(input_city, max_rows=10):
     input_index = cities_narrow.index[cities_narrow['City_unicode']==input_city][0] # Get index of input
     top_cities = cities_narrow.iloc[idx.iloc[input_index]] # Get rows of top cities
     
-    ### TESTING
     # get photos for top hits 
     top_cities['my_index'] = top_cities.index # get index for top cities only
     top_cities['Photos'] = top_cities['my_index'].apply(load_photos, img_num=0)
@@ -91,14 +86,7 @@ def generate_table(input_city, max_rows=10):
     top_cities['Photo3'] = top_cities['my_index'].apply(load_photos, img_num=3)
     top_names = top_cities[['City','Country','Photos','Photo1','Photo2','Photo3','Lat','Lon']].head(10)
     dataframe = top_names[['City','Country','Photos','Photo1','Photo2','Photo3']]    
-    ### TESTING
-    
-    
-    ################################### TO DO #########################################
-    
-    # For duplicate cities, append less popular cities with some kind of suffix
-    
-    
+
     # make map
     cities_map = folium.Map(location=[30, top_cities['Lon'].mean()], zoom_start=2, 
     tiles='Mapbox Bright', width=950, height=550)
@@ -157,6 +145,7 @@ dcc._css_dist[0]['relative_package_path'].append('mycss.css')
 #app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 app.title = 'LeapFrog'
 
+
 app.layout = html.Div(children=[
     
     # Header
@@ -181,14 +170,16 @@ app.layout = html.Div(children=[
                   style = {'margin':'auto','display':'block'}),
         html.Button(id='submit-button', n_clicks=0, children='Submit',
                     style = {'margin':'auto', 'margin-top':'10px','display':'block', 'margin-bottom':'50px'}),
-        html.Div(id='output-state', style = {'margin':'auto', 'display':'block'})
+        html.Div(id='output-state', style = {'margin':'auto', 'display':'block', 'margin-bottom':'100px'})
     ],
     style = {'width':'100%','margin':'auto', 'display':'block'}
     
     ),
     
     # Footer
-    html.Div(style = {'height':'200px'})
+    html.Div(children='Recommendations based on WikiTravel article text',
+             style = {'height':'50px', 'width':'100%','margin':'auto', 'display':'block', 'text-align':'center',
+                     'font-size':'10pt'})
     
  
 ])
