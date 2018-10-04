@@ -55,7 +55,7 @@ def strip_accents_lowercase(text):
     return str(text).lower()
 
 def load_photos(my_index, img_num):
-    folder_path = '../data/dl-images/'+str(my_index)+'/'
+    folder_path = '../data/dl-images-resized/'+str(my_index)+'/'
     img_list = [f for f in glob.glob(folder_path+'*.jpg')] # get all image file names for a given city
     try:
         encoded_image = base64.b64encode(open(img_list[img_num], 'rb').read())   # open img
